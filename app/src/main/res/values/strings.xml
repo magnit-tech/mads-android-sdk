@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="application_name">Mads Demo</string>
+
+    <string name="action_navigate_back">Back</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_apply">Apply</string>
+
+    <string name="configuration">Configuration</string>
+    <string name="configuration_user_id">User ID</string>
+
+    <string name="ad_format_in_app">In-App</string>
+    <string name="in_app_pad_id">Pad ID</string>
+    <string name="in_app_debug_creative">Debug creative</string>
+    <string name="in_app_load_ad">Start loading</string>
+    <string name="in_app_show_loaded_ad">Show loaded ad</string>
+    <string name="in_app_ad_loading_success">Loading succeed!</string>
+    <string name="in_app_ad_loading_failure">Loading failed!</string>
+    <string name="in_app_ad_showing_callback_ad_shown">Demo callback: In-App ad shown</string>
+    <string name="in_app_ad_showing_callback_ad_failed_to_show">Demo callback: In-App ad failed to show</string>
+    <string name="in_app_ad_showing_callback_ad_dismissed">Demo callback: In-App ad dismissed</string>
+    <string name="in_app_ad_showing_callback_ad_deeplink_button_clicked">Demo callback: In-App ad deeplink button clicked</string>
+    <string name="in_app_ad_showing_callback_ad_promo_code_button_clicked">Demo callback: In-App ad promo code button clicked</string>
+
+</resources>

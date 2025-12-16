@@ -1,0 +1,7 @@
+.gradle
+.idea
+.kotlin
+build
+/maven/mads
+local.properties
+mads.zip
