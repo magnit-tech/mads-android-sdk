@@ -1,0 +1,17 @@
+[versions]
+kotlin = "2.2.21"
+navigation3 = "1.0.0"
+
+[libraries]
+mads = "ru.tander.mads:integration:0.0.1"
+androidx-fragment = "androidx.fragment:fragment-ktx:1.8.9"
+androidx-lifecycle-viewmodel-navigation3 = "androidx.lifecycle:lifecycle-viewmodel-navigation3:2.10.0"
+androidx-compose-material3 = "androidx.compose.material3:material3:1.4.0"
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+kotlinx-collections-immutable = "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0"
+
+[plugins]
+android-application = { id = "com.android.application", version = "8.13.2" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
