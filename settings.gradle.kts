@@ -16,7 +16,6 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         mavenLocal()
-        maven { url = uri("$rootDir/maven/mads") }
         google()
         mavenCentral()
     }

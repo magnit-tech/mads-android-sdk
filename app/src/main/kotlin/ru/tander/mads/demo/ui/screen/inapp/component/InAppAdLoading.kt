@@ -3,7 +3,6 @@ package ru.tander.mads.demo.ui.screen.inapp.component
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,22 +18,35 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.tander.mads.demo.R
-import ru.tander.mads.inapp.model.InAppAd
+import ru.tander.mads.inapp.showing.InAppAdContent
+import ru.tander.mads.inapp.showing.InAppAdShowingAction
+import ru.tander.mads.inapp.showing.InAppAdShowingEvent
 
 @Composable
 fun InAppAdLoading(
     model: InAppAdLoadingModel,
-    showLoadedAd: (InAppAd) -> Unit,
+    showLoadedAd: (InAppAdContent) -> Unit,
+    handleAdAction: (InAppAdShowingAction) -> Unit,
+    handleAdEvent: (InAppAdShowingEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val status = model.status.collectAsStateWithLifecycle()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     Surface(
         modifier = modifier,
@@ -90,11 +102,29 @@ fun InAppAdLoading(
                         iconRes = R.drawable.ic_status_success,
                         trailingContent = {
                             Button(
-                                onClick = { showLoadedAd(status.loadedAd) },
+                                onClick = { showLoadedAd(status.loadedAdContent) },
                                 content = { Text(stringResource(R.string.in_app_show_loaded_ad)) }
                             )
                         }
                     )
+                    LaunchedEffect(status, lifecycleOwner, handleAdAction) {
+                        status.loadedAdContent.actions
+                            .flowWithLifecycle(
+                                lifecycle = lifecycleOwner.lifecycle,
+                                minActiveState = Lifecycle.State.STARTED,
+                            )
+                            .onEach(handleAdAction)
+                            .launchIn(lifecycleOwner.lifecycleScope)
+                    }
+                    LaunchedEffect(status, lifecycleOwner, handleAdEvent) {
+                        status.loadedAdContent.events
+                            .flowWithLifecycle(
+                                lifecycle = lifecycleOwner.lifecycle,
+                                minActiveState = Lifecycle.State.STARTED,
+                            )
+                            .onEach(handleAdEvent)
+                            .launchIn(lifecycleOwner.lifecycleScope)
+                    }
                 }
                 is InAppAdLoadingModel.Status.Failure -> {
                     InAppAdLoadingStatus(

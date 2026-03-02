@@ -18,9 +18,9 @@
     <string name="in_app_ad_loading_success">Loading succeed!</string>
     <string name="in_app_ad_loading_failure">Loading failed!</string>
     <string name="in_app_ad_showing_callback_ad_shown">Demo callback: In-App ad shown</string>
-    <string name="in_app_ad_showing_callback_ad_failed_to_show">Demo callback: In-App ad failed to show</string>
     <string name="in_app_ad_showing_callback_ad_dismissed">Demo callback: In-App ad dismissed</string>
     <string name="in_app_ad_showing_callback_ad_deeplink_button_clicked">Demo callback: In-App ad deeplink button clicked</string>
     <string name="in_app_ad_showing_callback_ad_promo_code_button_clicked">Demo callback: In-App ad promo code button clicked</string>
+    <string name="in_app_ad_showing_callback_unknown">Demo callback: unknown</string>
 
 </resources>

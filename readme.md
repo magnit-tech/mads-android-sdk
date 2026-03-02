@@ -6,12 +6,6 @@
 
 Документация к SDK доступна [по ссылке](https://mad-sdk-doc.vercel.app).
 
-## Сборка и запуск
-
-Перед синхронизацией и сборкой проекта необходимо распаковать содержимое `mads.zip` внутри репозитория по пути `maven/mads`. Сделать это можно поместив `mads.zip` в корень проекта и запустив `./gradlew installAndroidSdk`.
-
-После этого проект должен собираться, приложение должно запускаться и работать корректно.
-
 ## На что стоит обратить внимание
 
 ### Инициализация SDK
@@ -27,8 +21,6 @@
 Весь код работы приложения с In-App рекламой находится в пакете [ru.tander.mads.demo.ui.screen.inapp](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inapp).
 
 #### 1. Загрузка In-App рекламы
-
-Инициализация загрузчика рекламы (`InAppAdLoader`) происходит внутри [InAppAdDemoViewModel](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inapp/InAppAdDemoViewModel.kt).
 
 Загрузка рекламы происходит внутри [InAppAdLoadingModel](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inapp/component/InAppAdLoadingModel.kt).
 

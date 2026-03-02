@@ -11,22 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.tander.mads.Mads
 import ru.tander.mads.demo.R
 import ru.tander.mads.demo.ui.component.form.form
 import ru.tander.mads.demo.ui.component.form.formButton
 import ru.tander.mads.demo.ui.screen.MadsDemoScreenContentContainer
 import ru.tander.mads.demo.ui.screen.inapp.component.InAppAdLoading
-import ru.tander.mads.inapp.model.InAppAd
-import ru.tander.mads.inapp.showing.events.InAppAdShowingEventsCallback
-
-private const val AD_SHOWING_TAG = "madsDemoInAppAd"
+import ru.tander.mads.inapp.showing.InAppAdShowingAction
+import ru.tander.mads.inapp.showing.InAppAdShowingEvent
 
 @Composable
 fun InAppAdDemoScreen(
@@ -40,17 +36,6 @@ fun InAppAdDemoScreen(
 ) { paddingValues ->
 
     val fragmentActivity = (LocalActivity.current as FragmentActivity)
-
-    DisposableEffect(fragmentActivity) {
-        val adShowingCallback = DemoInAppAdShowingEventCallback(
-            context = fragmentActivity,
-        )
-        val adShowingCallbackSubscription = Mads.subscribeToInAppAdShowingEvents(
-            callback = adShowingCallback,
-            tag = AD_SHOWING_TAG,
-        )
-        onDispose(adShowingCallbackSubscription::cancel)
-    }
 
     val adLoadings = viewModel.adLoadings.collectAsStateWithLifecycle()
 
@@ -71,10 +56,39 @@ fun InAppAdDemoScreen(
             InAppAdLoading(
                 model = adLoading,
                 showLoadedAd = { loadedAd ->
-                    showLoadedAd(
-                        activity = fragmentActivity,
-                        loadedAd = loadedAd,
-                    )
+                    loadedAd.show(fragmentActivity)
+                },
+                handleAdAction = { action ->
+                    when (action) {
+                        is InAppAdShowingAction.OnUrlClicked -> showToast(
+                            context = fragmentActivity,
+                            messageRes = R.string.in_app_ad_showing_callback_ad_deeplink_button_clicked,
+                        )
+                        is InAppAdShowingAction.OnPromocodeCopy -> showToast(
+                            context = fragmentActivity,
+                            messageRes = R.string.in_app_ad_showing_callback_ad_promo_code_button_clicked,
+                        )
+                        else -> showToast(
+                            context = fragmentActivity,
+                            messageRes = R.string.in_app_ad_showing_callback_unknown,
+                        )
+                    }
+                },
+                handleAdEvent = { event ->
+                    when (event) {
+                        is InAppAdShowingEvent.OnCreativeView -> showToast(
+                            context = fragmentActivity,
+                            messageRes = R.string.in_app_ad_showing_callback_ad_shown,
+                        )
+                        is InAppAdShowingEvent.OnCreativeDismissed -> showToast(
+                            context = fragmentActivity,
+                            messageRes = R.string.in_app_ad_showing_callback_ad_dismissed,
+                        )
+                        else -> showToast(
+                            context = fragmentActivity,
+                            messageRes = R.string.in_app_ad_showing_callback_unknown,
+                        )
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -82,40 +96,9 @@ fun InAppAdDemoScreen(
     }
 }
 
-private fun showLoadedAd(
-    activity: FragmentActivity,
-    loadedAd: InAppAd,
-): Unit = Mads.showInAppAd(
-    activity = activity,
-    ad = loadedAd,
-    tag = AD_SHOWING_TAG,
-)
-
-private class DemoInAppAdShowingEventCallback(
-    private val context: Context,
-) : InAppAdShowingEventsCallback {
-
-    override fun onAdShown(): Unit = showToast(
-        messageRes = R.string.in_app_ad_showing_callback_ad_shown,
-    )
-
-    override fun onAdFailedToShow(failure: Throwable): Unit = showToast(
-        messageRes = R.string.in_app_ad_showing_callback_ad_failed_to_show,
-    )
-
-    override fun onAdDismissed(): Unit = showToast(
-        messageRes = R.string.in_app_ad_showing_callback_ad_dismissed,
-    )
-
-    override fun onAdDeeplinkButtonClicked(deeplink: String): Unit = showToast(
-        messageRes = R.string.in_app_ad_showing_callback_ad_deeplink_button_clicked,
-    )
-
-    override fun onAdCopyPromoCodeButtonClicked(promoCode: String): Unit = showToast(
-        messageRes = R.string.in_app_ad_showing_callback_ad_promo_code_button_clicked,
-    )
-
-    private fun showToast(@StringRes messageRes: Int) {
-        Toast.makeText(context, messageRes, Toast.LENGTH_SHORT).show()
-    }
-}
+private fun showToast(
+    context: Context,
+    @StringRes messageRes: Int,
+): Unit = Toast
+    .makeText(context, messageRes, Toast.LENGTH_SHORT)
+    .show()
