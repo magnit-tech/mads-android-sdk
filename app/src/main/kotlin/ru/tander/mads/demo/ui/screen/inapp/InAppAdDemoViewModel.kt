@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import ru.tander.mads.Mads
+import ru.tander.mads.MadsSdk
 import ru.tander.mads.demo.MadsSdkDefaults
 import ru.tander.mads.demo.R
 import ru.tander.mads.demo.ui.component.form.FormSwitchFieldModel
@@ -25,7 +25,7 @@ class InAppAdDemoViewModel(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val adLoader = Mads.inAppAdLoader()
+    private val adLoader = MadsSdk.inAppAdLoader()
 
     private val padIdFieldModel = FormTextFieldModel(
         labelRes = R.string.in_app_pad_id,

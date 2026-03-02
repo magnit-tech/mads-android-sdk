@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.tander.mads.Mads
+import ru.tander.mads.MadsSdk
 import ru.tander.mads.demo.R
 import ru.tander.mads.demo.ui.component.form.form
 import ru.tander.mads.demo.ui.component.form.formButton
@@ -45,7 +45,7 @@ fun InAppAdDemoScreen(
         val adShowingCallback = DemoInAppAdShowingEventCallback(
             context = fragmentActivity,
         )
-        val adShowingCallbackSubscription = Mads.subscribeToInAppAdShowingEvents(
+        val adShowingCallbackSubscription = MadsSdk.subscribeToInAppAdShowingEvents(
             callback = adShowingCallback,
             tag = AD_SHOWING_TAG,
         )
@@ -85,7 +85,7 @@ fun InAppAdDemoScreen(
 private fun showLoadedAd(
     activity: FragmentActivity,
     loadedAd: InAppAd,
-): Unit = Mads.showInAppAd(
+): Unit = MadsSdk.showInAppAd(
     activity = activity,
     ad = loadedAd,
     tag = AD_SHOWING_TAG,

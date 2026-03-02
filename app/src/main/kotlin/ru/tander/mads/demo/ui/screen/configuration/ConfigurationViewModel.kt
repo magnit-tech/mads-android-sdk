@@ -3,7 +3,7 @@ package ru.tander.mads.demo.ui.screen.configuration
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ru.tander.mads.Mads
+import ru.tander.mads.MadsSdk
 import ru.tander.mads.demo.MadsSdkDefaults
 import ru.tander.mads.demo.R
 import ru.tander.mads.demo.ui.component.form.FormTextFieldModel
@@ -16,7 +16,7 @@ class ConfigurationViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         savedStateHandle = savedStateHandle,
         viewModelScope = viewModelScope,
         fieldKey = KEY_USER_ID,
-        initialValue = Mads.userId.orEmpty(),
+        initialValue = MadsSdk.userId.orEmpty(),
         defaultValue = MadsSdkDefaults.USER_ID,
     )
 
@@ -25,7 +25,7 @@ class ConfigurationViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     )
 
     fun onApplyPressed() {
-        Mads.userId = userIdField.value.value
+        MadsSdk.userId = userIdField.value.value
     }
 
     private companion object {
