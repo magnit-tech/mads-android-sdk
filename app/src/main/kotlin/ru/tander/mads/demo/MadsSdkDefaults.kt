@@ -9,4 +9,9 @@ object MadsSdkDefaults {
         const val PAD_ID = "1"
         const val DEBUG_CREATIVE = true
     }
+
+    object InLine {
+        const val PAD_ID = "46"
+        const val DEBUG_CREATIVE = true
+    }
 }

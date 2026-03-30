@@ -1,5 +1,6 @@
 package ru.tander.mads.demo.ui.screen
 
+import InLineAdDemoScreen
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
@@ -23,6 +24,7 @@ fun MadsDemoScreenContainer() {
             AdFormatsScreen(
                 onConfigurationClick = { navigateToConfiguration(backStack) },
                 onInAppAdFormatClick = { navigateToInAppAdDemoScreen(backStack) },
+                onInLineAdFormatClick = { navigateToInLineAdDemoScreen(backStack) }
             )
         }
         entry<Screen.ConfigurationScreen> {
@@ -32,6 +34,12 @@ fun MadsDemoScreenContainer() {
         }
         entry<Screen.InAppAdDemoScreen> {
             InAppAdDemoScreen(
+                onBackPressed = { navigateBack(backStack) },
+                onConfigurationClick = { navigateToConfiguration(backStack) },
+            )
+        }
+        entry<Screen.InLineAdDemoScreen> {
+            InLineAdDemoScreen(
                 onBackPressed = { navigateBack(backStack) },
                 onConfigurationClick = { navigateToConfiguration(backStack) },
             )
@@ -60,6 +68,10 @@ private fun navigateToInAppAdDemoScreen(backStack: NavBackStack<NavKey>) {
     backStack.add(Screen.InAppAdDemoScreen)
 }
 
+private fun navigateToInLineAdDemoScreen(backStack: NavBackStack<NavKey>) {
+    backStack.add(Screen.InLineAdDemoScreen)
+}
+
 private sealed interface Screen : NavKey {
 
     @Serializable
@@ -70,4 +82,7 @@ private sealed interface Screen : NavKey {
 
     @Serializable
     data object InAppAdDemoScreen : Screen
+
+    @Serializable
+    data object InLineAdDemoScreen : Screen
 }

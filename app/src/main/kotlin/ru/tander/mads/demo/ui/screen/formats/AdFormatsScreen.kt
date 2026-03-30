@@ -17,6 +17,7 @@ import ru.tander.mads.demo.ui.screen.MadsDemoScreenContentContainer
 fun AdFormatsScreen(
     onConfigurationClick: () -> Unit,
     onInAppAdFormatClick: () -> Unit,
+    onInLineAdFormatClick: () -> Unit,
 ) = MadsDemoScreenContentContainer(
     labelRes = R.string.application_name,
     onConfigurationClick = onConfigurationClick,
@@ -25,6 +26,10 @@ fun AdFormatsScreen(
         adFormat(
             nameRes = R.string.ad_format_in_app,
             onClick = onInAppAdFormatClick,
+        )
+        adFormat(
+            nameRes = R.string.ad_format_in_line,
+            onClick = onInLineAdFormatClick
         )
     }
 }
