@@ -1,6 +1,6 @@
 package ru.tander.mads.demo.ui.screen.inline
 
-import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,9 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import ru.tander.mads.demo.R
+import ru.tander.mads.demo.ui.component.form.showToast
 import ru.tander.mads.demo.ui.screen.inline.model.InLineAdLoadingModel
 import ru.tander.mads.inline.loading.integration_public.InLineAdResponse
+import ru.tander.mads.inline.multiformat.integration_public.events.MultiformatAdActions
 import ru.tander.mads.inline.multiformat.integration_public.events.MultiformatAdEvents
 
 @Composable
@@ -30,12 +33,27 @@ fun InLineAdLoadingItem(
     item: InLineAdLoadingModel,
     modifier: Modifier = Modifier,
 ) {
+    val fragmentActivity = (LocalActivity.current as FragmentActivity)
+
     if (item.result is InLineAdResponse.Loaded) {
-        LaunchedEffect(item.result) {
+        LaunchedEffect(item.result.content.events) {
             item.result.content.events.collect { event ->
                 when (event) {
                     is MultiformatAdEvents.OnBlockView -> {}
                     is MultiformatAdEvents.OnCreativeView -> {}
+                }
+            }
+        }
+
+        LaunchedEffect(item.result.content.actions) {
+            item.result.content.actions.collect { action ->
+                when (action) {
+                    is MultiformatAdActions.OnUrlClicked -> {
+                        showToast(
+                            context = fragmentActivity,
+                            messageRes = R.string.in_line_ad_showing_callback_ad_deeplink_button_clicked,
+                        )
+                    }
                 }
             }
         }

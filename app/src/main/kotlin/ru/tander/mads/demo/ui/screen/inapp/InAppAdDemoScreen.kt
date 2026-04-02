@@ -1,9 +1,6 @@
 package ru.tander.mads.demo.ui.screen.inapp
 
-import android.content.Context
-import android.widget.Toast
 import androidx.activity.compose.LocalActivity
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.tander.mads.demo.R
 import ru.tander.mads.demo.ui.component.form.form
 import ru.tander.mads.demo.ui.component.form.formButton
+import ru.tander.mads.demo.ui.component.form.showToast
 import ru.tander.mads.demo.ui.screen.MadsDemoScreenContentContainer
 import ru.tander.mads.demo.ui.screen.inapp.component.InAppAdLoading
 import ru.tander.mads.inapp.showing.InAppAdShowingAction
@@ -95,10 +93,3 @@ fun InAppAdDemoScreen(
         }
     }
 }
-
-private fun showToast(
-    context: Context,
-    @StringRes messageRes: Int,
-): Unit = Toast
-    .makeText(context, messageRes, Toast.LENGTH_SHORT)
-    .show()

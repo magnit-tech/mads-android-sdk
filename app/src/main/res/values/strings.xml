@@ -27,5 +27,6 @@
 
     <string name="in_line_pad_id">Pad ID</string>
     <string name="in_line_debug_creative">Debug creative</string>
+    <string name="in_line_ad_showing_callback_ad_deeplink_button_clicked">Demo callback: In-Line ad deeplink button clicked</string>
 
 </resources>
