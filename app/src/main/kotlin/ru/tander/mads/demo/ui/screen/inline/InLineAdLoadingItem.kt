@@ -35,7 +35,7 @@ fun InLineAdLoadingItem(
 ) {
     val fragmentActivity = (LocalActivity.current as FragmentActivity)
 
-    if (item.result is InLineAdResponse.Loaded) {
+    if (item.result is InLineAdResponse.Success) {
         LaunchedEffect(item.result.content.events) {
             item.result.content.events.collect { event ->
                 when (event) {
@@ -118,7 +118,7 @@ fun InLineAdLoadingItem(
                 }
             }
 
-            is InLineAdResponse.Loaded -> {
+            is InLineAdResponse.Success -> {
                 item.result.content.show()
             }
         }
