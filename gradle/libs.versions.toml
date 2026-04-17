@@ -3,7 +3,7 @@ kotlin = "2.2.21"
 navigation3 = "1.0.0"
 
 [libraries]
-mads = "ru.magnit.mads.mobile:android-sdk:0.2.0"
+mads = "ru.magnit.mads.mobile:android-sdk:0.3.0"
 androidx-fragment = "androidx.fragment:fragment-ktx:1.8.9"
 androidx-lifecycle-viewmodel-navigation3 = "androidx.lifecycle:lifecycle-viewmodel-navigation3:2.10.0"
 androidx-compose-material3 = "androidx.compose.material3:material3:1.4.0"
