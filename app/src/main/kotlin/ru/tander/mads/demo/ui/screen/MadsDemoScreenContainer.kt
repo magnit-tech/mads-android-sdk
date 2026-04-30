@@ -1,6 +1,5 @@
 package ru.tander.mads.demo.ui.screen
 
-import InLineAdDemoScreen
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
@@ -13,6 +12,7 @@ import kotlinx.serialization.Serializable
 import ru.tander.mads.demo.ui.screen.configuration.ConfigurationScreen
 import ru.tander.mads.demo.ui.screen.formats.AdFormatsScreen
 import ru.tander.mads.demo.ui.screen.inapp.InAppAdDemoScreen
+import ru.tander.mads.demo.ui.screen.inline.InLineAdDemoScreen
 
 @Composable
 fun MadsDemoScreenContainer() {
