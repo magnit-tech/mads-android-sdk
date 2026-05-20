@@ -1,84 +1,66 @@
 package ru.tander.mads.demo.ui.screen.inline
 
-import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.tander.mads.demo.R
-import ru.tander.mads.demo.ui.component.form.form
-import ru.tander.mads.demo.ui.component.form.formButton
-import ru.tander.mads.demo.ui.component.form.showToast
 import ru.tander.mads.demo.ui.screen.MadsDemoScreenContentContainer
-import ru.tander.mads.demo.ui.screen.inline.component.InLineAdLoading
-import ru.tander.mads.inline.multiformat.integration_public.events.MultiformatAdActions
-import ru.tander.mads.inline.multiformat.integration_public.events.MultiformatAdEvents
+import ru.tander.mads.inline.model.InLineAdContent
 
 @Composable
 fun InLineAdDemoScreen(
     onBackPressed: () -> Unit,
-    onConfigurationClick: () -> Unit,
     viewModel: InLineAdDemoViewModel = viewModel(),
 ) = MadsDemoScreenContentContainer(
     labelRes = R.string.ad_format_in_line,
     onBackPressed = onBackPressed,
-    onConfigurationClick = onConfigurationClick,
 ) { paddingValues ->
 
-    val fragmentActivity = (LocalActivity.current as FragmentActivity)
+    val viewStateState = viewModel.viewState.collectAsStateWithLifecycle()
 
-    val adLoadings = viewModel.adLoadings.collectAsStateWithLifecycle()
-
-    LazyColumn(Modifier.padding(paddingValues)) {
-        form(
-            fieldsModels = viewModel.formFieldsModels,
-            itemModifier = { Modifier.fillMaxWidth() },
-        )
-        formButton(
-            onClick = viewModel::onLoadAdPressed,
-            labelRes = R.string.in_app_load_ad,
-            modifier = { Modifier.fillMaxWidth() },
-        )
-        items(adLoadings.value) { adLoading ->
-            Spacer(
-                modifier = Modifier.height(8.dp),
-            )
-            InLineAdLoading(
-                model = adLoading,
-                handleAdAction = { action ->
-                    when (action) {
-                        is MultiformatAdActions.OnUrlClicked -> showToast(
-                            context = fragmentActivity,
-                            messageRes = R.string.in_line_ad_showing_callback_ad_deeplink_button_clicked,
-                        )
-                        else -> showToast(
-                            context = fragmentActivity,
-                            messageRes = R.string.in_line_ad_showing_callback_unknown,
-                        )
+    Column(
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        when (val viewState = viewStateState.value) {
+            is InLineAdDemoViewModel.ViewState.InProgress -> {
+                CircularProgressIndicator()
+            }
+            is InLineAdDemoViewModel.ViewState.Success -> {
+                when (viewState.contentType) {
+                    is InLineAdContent.Type.Empty -> {
+                        // nothing to show, no-op
                     }
-                },
-                handleAdEvent = { event ->
-                    when (event) {
-                        is MultiformatAdEvents.OnBlockView -> showToast(
-                            context = fragmentActivity,
-                            messageRes = R.string.in_line_ad_showing_callback_block_view,
-                        )
-                        is MultiformatAdEvents.OnCreativeView -> showToast(
-                            context = fragmentActivity,
-                            messageRes = R.string.in_line_ad_showing_callback_creative_view,
-                        )
+                    is InLineAdContent.Type.Banner.Carousel -> {
+                        // default carousel appearance looks good to us, show as is
+                        viewState.showContent(Modifier)
                     }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            )
+                    is InLineAdContent.Type.Banner.SingleItem -> {
+                        // slightly adjust single item appearance by adding horizontal paddings
+                        viewState.showContent(Modifier.padding(horizontal = 12.dp))
+                    }
+                    else -> {
+                        // unknown content type, show as is
+                        viewState.showContent(Modifier)
+                    }
+                }
+            }
+            is InLineAdDemoViewModel.ViewState.Failure -> {
+                Text(stringResource(R.string.in_line_ad_loading_failure))
+            }
         }
     }
 }

@@ -22,11 +22,11 @@
 
 #### 1. Загрузка In-App рекламы
 
-Загрузка рекламы происходит внутри [InAppAdLoadingModel](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inapp/component/InAppAdLoadingModel.kt).
+Загрузка рекламы происходит внутри [InAppAdDemoViewModel](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inapp/InAppAdDemoViewModel.kt).
 
 #### 2. Показ In-App рекламы
 
-Показ и подписка на события показа In-App рекламы происходят внутри [InAppAdDemoScreen](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inapp/InAppAdDemoScreen.kt).
+Показ In-App рекламы происходит внутри [InAppAdDemoScreen](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inapp/InAppAdDemoScreen.kt), подписка на события показа - внутри [InAppAdDemoViewModel](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inapp/InAppAdDemoViewModel.kt).
 
 ### Работа с In-Line рекламой
 
@@ -40,6 +40,5 @@
 
 #### 2. Показ In-Line рекламы
 
-Показ и подписка на события показа In-Line рекламы происходят внутри [InLineAdLoadingItem.kt](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inline/InLineAdLoadingItem.kt).
-
+Показ In-Line рекламы происходит внутри [InLineAdDemoScreen](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inline/InLineAdDemoScreen.kt), подписка на события показа - внутри [InLineAdDemoViewModel](app/src/main/kotlin/ru/tander/mads/demo/ui/screen/inline/InLineAdDemoViewModel.kt).
 

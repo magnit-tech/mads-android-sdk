@@ -1,76 +1,96 @@
 package ru.tander.mads.demo.ui.screen.inapp
 
-import androidx.lifecycle.SavedStateHandle
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import ru.tander.mads.demo.MadsSdkDefaults
-import ru.tander.mads.demo.R
-import ru.tander.mads.demo.ui.component.form.FormSwitchFieldModel
-import ru.tander.mads.demo.ui.component.form.FormTextFieldModel
-import ru.tander.mads.demo.ui.component.form.formFieldsModels
-import ru.tander.mads.demo.ui.screen.inapp.component.InAppAdLoadingModel
-import kotlin.concurrent.atomics.AtomicInt
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.concurrent.atomics.incrementAndFetch
+import kotlinx.coroutines.launch
+import ru.tander.mads.Mads
+import ru.tander.mads.inapp.loading.InAppAdResponse
+import ru.tander.mads.inapp.showing.InAppAdShowingAction
+import ru.tander.mads.inapp.showing.InAppAdShowingEvent
 
-class InAppAdDemoViewModel(
-    savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+class InAppAdDemoViewModel : ViewModel() {
 
-    private val padIdFieldModel = FormTextFieldModel(
-        labelRes = R.string.in_app_pad_id,
-        savedStateHandle = savedStateHandle,
-        viewModelScope = viewModelScope,
-        fieldKey = KEY_PAD_ID,
-        initialValue = MadsSdkDefaults.InApp.PAD_ID,
-        defaultValue = MadsSdkDefaults.InApp.PAD_ID,
-    )
+    private val mutableViewState = MutableStateFlow<ViewState>(ViewState.InProgress())
 
-    private val debugCreativeFieldModel = FormSwitchFieldModel(
-        labelRes = R.string.in_app_debug_creative,
-        savedStateHandle = savedStateHandle,
-        viewModelScope = viewModelScope,
-        fieldKey = KEY_DEBUG_CREATIVE,
-        initialValue = MadsSdkDefaults.InApp.DEBUG_CREATIVE,
-        defaultValue = MadsSdkDefaults.InApp.DEBUG_CREATIVE,
-    )
+    val viewState: StateFlow<ViewState> = mutableViewState.asStateFlow()
 
-    val formFieldsModels = formFieldsModels(
-        padIdFieldModel,
-        debugCreativeFieldModel,
-    )
-
-    private val mutableAdLoadings: MutableStateFlow<ImmutableList<InAppAdLoadingModel>> =
-        MutableStateFlow(persistentListOf())
-
-    val adLoadings: StateFlow<ImmutableList<InAppAdLoadingModel>> = mutableAdLoadings.asStateFlow()
-
-    @OptIn(ExperimentalAtomicApi::class)
-    private val adLoadingsCounter = AtomicInt(0)
-
-    fun onLoadAdPressed() {
-        @OptIn(ExperimentalAtomicApi::class)
-        mutableAdLoadings.update { adLoadings ->
-            val newLoading = InAppAdLoadingModel(
-                padId = padIdFieldModel.value.value,
-                debugCreative = debugCreativeFieldModel.value.value,
-                ordinalNumber = adLoadingsCounter.incrementAndFetch(),
-                coroutineScope = viewModelScope,
+    init {
+        viewModelScope.launch {
+            val loadingResult = Mads.inApp.load(
+                adRequest = inAppAdDemoRequest,
             )
-            adLoadings.toPersistentList().add(newLoading)
+            when (loadingResult) {
+                is InAppAdResponse.Success -> {
+                    loadingResult.content.actions
+                        .onEach(::handleInAppAdShowingAction)
+                        .launchIn(viewModelScope)
+                    loadingResult.content.events
+                        .onEach(::handleInAppAdShowingEvent)
+                        .launchIn(viewModelScope)
+                    mutableViewState.update {
+                        ViewState.Success(loadingResult.content::show)
+                    }
+                }
+                is InAppAdResponse.NoContent -> { // <- optional NoContent state handling
+                    mutableViewState.update {
+                        ViewState.Failure()
+                    }
+                }
+                is InAppAdResponse.Failure -> { // <- optional Failure state handling
+                    mutableViewState.update {
+                        ViewState.Failure()
+                    }
+                }
+                else -> {  // <- required else branch
+                    mutableViewState.update {
+                        ViewState.Failure()
+                    }
+                }
+            }
         }
     }
 
-    private companion object {
+    private fun handleInAppAdShowingAction(action: InAppAdShowingAction) {
+        when (action) {
+            is InAppAdShowingAction.OnUrlClicked -> {
+                // implement url opening
+            }
+            is InAppAdShowingAction.OnPromocodeCopy -> {
+                // implement promocode copying
+            }
+            else -> {
+                // unknown action, log error
+            }
+        }
+    }
 
-        const val KEY_PAD_ID = "padId"
-        const val KEY_DEBUG_CREATIVE = "debugCreative"
+    private fun handleInAppAdShowingEvent(event: InAppAdShowingEvent) {
+        when (event) {
+            is InAppAdShowingEvent.OnCreativeView -> {
+                // ad is just shown
+            }
+            is InAppAdShowingEvent.OnCreativeDismissed -> {
+                // ad is just dismissed
+            }
+            else -> {
+                // unknown event, no-op
+            }
+        }
+    }
+
+    sealed interface ViewState {
+
+        class InProgress : ViewState
+
+        class Success(val showContent: (FragmentActivity) -> Unit) : ViewState
+
+        class Failure : ViewState
     }
 }

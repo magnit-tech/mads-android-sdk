@@ -17,7 +17,6 @@ import ru.tander.mads.demo.R
 fun MadsDemoScreenContentContainer(
     @StringRes labelRes: Int,
     onBackPressed: (() -> Unit)? = null,
-    onConfigurationClick: (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) = Scaffold(
     topBar = {
@@ -32,16 +31,6 @@ fun MadsDemoScreenContentContainer(
                         Icon(
                             painter = painterResource(R.drawable.ic_action_navigate_back),
                             contentDescription = stringResource(R.string.action_navigate_back),
-                        )
-                    }
-                }
-            },
-            actions = {
-                onConfigurationClick?.let {
-                    IconButton(onClick = onConfigurationClick) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_action_navigate_to_configuration),
-                            contentDescription = stringResource(R.string.configuration),
                         )
                     }
                 }

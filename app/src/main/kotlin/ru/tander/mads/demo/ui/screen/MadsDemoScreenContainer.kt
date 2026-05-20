@@ -9,7 +9,6 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.serialization.Serializable
-import ru.tander.mads.demo.ui.screen.configuration.ConfigurationScreen
 import ru.tander.mads.demo.ui.screen.formats.AdFormatsScreen
 import ru.tander.mads.demo.ui.screen.inapp.InAppAdDemoScreen
 import ru.tander.mads.demo.ui.screen.inline.InLineAdDemoScreen
@@ -22,26 +21,18 @@ fun MadsDemoScreenContainer() {
     val entryProvider = entryProvider<NavKey> {
         entry<Screen.AdFormatsScreen> {
             AdFormatsScreen(
-                onConfigurationClick = { navigateToConfiguration(backStack) },
                 onInAppAdFormatClick = { navigateToInAppAdDemoScreen(backStack) },
                 onInLineAdFormatClick = { navigateToInLineAdDemoScreen(backStack) }
-            )
-        }
-        entry<Screen.ConfigurationScreen> {
-            ConfigurationScreen(
-                onBackPressed = { navigateBack(backStack) },
             )
         }
         entry<Screen.InAppAdDemoScreen> {
             InAppAdDemoScreen(
                 onBackPressed = { navigateBack(backStack) },
-                onConfigurationClick = { navigateToConfiguration(backStack) },
             )
         }
         entry<Screen.InLineAdDemoScreen> {
             InLineAdDemoScreen(
                 onBackPressed = { navigateBack(backStack) },
-                onConfigurationClick = { navigateToConfiguration(backStack) },
             )
         }
     }
@@ -60,10 +51,6 @@ private fun navigateBack(backStack: NavBackStack<NavKey>) {
     backStack.removeLastOrNull()
 }
 
-private fun navigateToConfiguration(backStack: NavBackStack<NavKey>) {
-    backStack.add(Screen.ConfigurationScreen)
-}
-
 private fun navigateToInAppAdDemoScreen(backStack: NavBackStack<NavKey>) {
     backStack.add(Screen.InAppAdDemoScreen)
 }
@@ -76,9 +63,6 @@ private sealed interface Screen : NavKey {
 
     @Serializable
     data object AdFormatsScreen : Screen
-
-    @Serializable
-    data object ConfigurationScreen : Screen
 
     @Serializable
     data object InAppAdDemoScreen : Screen

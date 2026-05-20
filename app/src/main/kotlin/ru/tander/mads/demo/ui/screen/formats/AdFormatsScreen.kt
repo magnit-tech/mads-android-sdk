@@ -15,12 +15,10 @@ import ru.tander.mads.demo.ui.screen.MadsDemoScreenContentContainer
 
 @Composable
 fun AdFormatsScreen(
-    onConfigurationClick: () -> Unit,
     onInAppAdFormatClick: () -> Unit,
     onInLineAdFormatClick: () -> Unit,
 ) = MadsDemoScreenContentContainer(
     labelRes = R.string.application_name,
-    onConfigurationClick = onConfigurationClick,
 ) { paddingValues ->
     LazyColumn(Modifier.padding(paddingValues)) {
         adFormat(

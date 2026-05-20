@@ -1,75 +1,98 @@
 package ru.tander.mads.demo.ui.screen.inline
 
-import androidx.lifecycle.SavedStateHandle
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import ru.tander.mads.demo.MadsSdkDefaults
-import ru.tander.mads.demo.R
-import ru.tander.mads.demo.ui.component.form.FormSwitchFieldModel
-import ru.tander.mads.demo.ui.component.form.FormTextFieldModel
-import ru.tander.mads.demo.ui.component.form.formFieldsModels
-import ru.tander.mads.demo.ui.screen.inline.component.InLineAdLoadingModel
-import kotlin.concurrent.atomics.AtomicInt
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.concurrent.atomics.incrementAndFetch
+import kotlinx.coroutines.launch
+import ru.tander.mads.Mads
+import ru.tander.mads.inline.loading.integration_public.InLineAdResponse
+import ru.tander.mads.inline.model.InLineAdAction
+import ru.tander.mads.inline.model.InLineAdContent
+import ru.tander.mads.inline.model.InLineAdEvent
+import ru.tander.mads.inline.multiformat.integration_public.events.MultiformatAdActions
+import ru.tander.mads.inline.multiformat.integration_public.events.MultiformatAdEvents
 
-class InLineAdDemoViewModel(
-    savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+class InLineAdDemoViewModel : ViewModel() {
 
-    private val padIdFieldModel = FormTextFieldModel(
-        labelRes = R.string.in_line_pad_id,
-        savedStateHandle = savedStateHandle,
-        viewModelScope = viewModelScope,
-        fieldKey = KEY_PAD_ID,
-        initialValue = MadsSdkDefaults.InLine.PAD_ID,
-        defaultValue = MadsSdkDefaults.InLine.PAD_ID,
-    )
+    private val mutableViewState = MutableStateFlow<ViewState>(ViewState.InProgress())
 
-    private val debugCreativeFieldModel = FormSwitchFieldModel(
-        labelRes = R.string.in_line_debug_creative,
-        savedStateHandle = savedStateHandle,
-        viewModelScope = viewModelScope,
-        fieldKey = KEY_DEBUG_CREATIVE,
-        initialValue = MadsSdkDefaults.InLine.DEBUG_CREATIVE,
-        defaultValue = MadsSdkDefaults.InLine.DEBUG_CREATIVE,
-    )
+    val viewState: StateFlow<ViewState> = mutableViewState.asStateFlow()
 
-    val formFieldsModels = formFieldsModels(
-        padIdFieldModel,
-        debugCreativeFieldModel,
-    )
-
-    private val mutableAdLoadings: MutableStateFlow<ImmutableList<InLineAdLoadingModel>> =
-        MutableStateFlow(persistentListOf())
-
-    val adLoadings: StateFlow<ImmutableList<InLineAdLoadingModel>> = mutableAdLoadings.asStateFlow()
-
-    @OptIn(ExperimentalAtomicApi::class)
-    private val adLoadingsCounter = AtomicInt(0)
-
-    fun onLoadAdPressed() {
-        @OptIn(ExperimentalAtomicApi::class)
-        mutableAdLoadings.update { adLoadings ->
-            val newLoading = InLineAdLoadingModel(
-                padId = padIdFieldModel.value.value,
-                debugCreative = debugCreativeFieldModel.value.value,
-                ordinalNumber = adLoadingsCounter.incrementAndFetch(),
-                coroutineScope = viewModelScope,
+    init {
+        viewModelScope.launch {
+            val loadingResult = Mads.inLine.load(
+                adRequest = inLineAdDemoRequest,
             )
-            adLoadings.toPersistentList().add(newLoading)
+            when (loadingResult) {
+                is InLineAdResponse.Success -> {
+                    loadingResult.content.actions
+                        .onEach(::handleInLineAdShowingAction)
+                        .launchIn(viewModelScope)
+                    loadingResult.content.events
+                        .onEach(::handleInLineAdShowingEvent)
+                        .launchIn(viewModelScope)
+                    mutableViewState.update {
+                        ViewState.Success(
+                            contentType = loadingResult.content.type,
+                            showContent = { modifier -> loadingResult.content.show(modifier) },
+                        )
+                    }
+                }
+                is InLineAdResponse.NoContent -> { // <- optional NoContent state handling
+                    mutableViewState.update {
+                        ViewState.Failure()
+                    }
+                }
+                is InLineAdResponse.Failure -> { // <- optional Failure state handling
+                    mutableViewState.update {
+                        ViewState.Failure()
+                    }
+                }
+            }
         }
     }
 
-    private companion object {
-        const val KEY_PAD_ID = "padId"
-        const val KEY_DEBUG_CREATIVE = "debugCreative"
+    private fun handleInLineAdShowingAction(action: InLineAdAction) {
+        when (action) {
+            is MultiformatAdActions.OnUrlClicked -> {
+                // implement url opening
+            }
+            else -> {
+                // unknown action, log error
+            }
+        }
+    }
+
+    private fun handleInLineAdShowingEvent(event: InLineAdEvent) {
+        when (event) {
+            is MultiformatAdEvents.OnBlockView -> {
+                // block is just shown
+            }
+            is MultiformatAdEvents.OnCreativeView -> {
+                // creative is just shown
+            }
+            else -> {
+                // unknown event, no-op
+            }
+        }
+    }
+
+    sealed interface ViewState {
+
+        class InProgress : ViewState
+
+        class Success(
+            val contentType: InLineAdContent.Type,
+            val showContent: @Composable (modifier: Modifier) -> Unit,
+        ) : ViewState
+
+        class Failure : ViewState
     }
 }

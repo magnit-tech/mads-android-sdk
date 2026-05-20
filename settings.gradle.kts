@@ -15,18 +15,7 @@ pluginManagement {
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositories {
-        mavenLocal {
-            content {
-                includeGroup("ru.magnit.mads.mobile")
-            }
-        }
-        mavenCentral {
-            content {
-                if (settings.providers.gradleProperty("madsForceLocal").orNull == "true") {
-                    excludeGroup("ru.magnit.mads.mobile")
-                }
-            }
-        }
+        mavenCentral()
         google()
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
